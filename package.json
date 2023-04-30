@@ -4,6 +4,7 @@
   "title": "Mochi",
   "description": "Mochi connects you to the world of Web3",
   "icon": "mochi.png",
+  "owner": "mochi-extension",
   "author": "Palanikannan1437",
   "categories": [
     "Developer Tools"
