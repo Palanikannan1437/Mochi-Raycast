@@ -1,0 +1,66 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "mochi",
+  "title": "Mochi",
+  "description": "Mochi connects you to the world of Web3",
+  "icon": "mochi.png",
+  "author": "Palanikannan1437",
+  "categories": [
+    "Developer Tools"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Show List and Detail",
+      "description": "Template for showing a static list and a detail view",
+      "mode": "view"
+    },
+    {
+      "name": "currency",
+      "title": "Show Currency",
+      "description": "Template for showing a static list and a detail view",
+      "mode": "view"
+    },
+    {
+      "name": "grid",
+      "title": "Show Auth",
+      "description": "Template for showing a static list and a detail view",
+      "mode": "view"
+    },
+    {
+      "name": "currency_chart_renderer",
+      "title": "Show Currency Chart",
+      "description": "Template for showing start data for each currency",
+      "mode": "view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.49.3",
+    "@raycast/utils": "^1.5.2",
+    "cheerio": "^1.0.0-rc.12",
+    "dayjs": "^1.11.7",
+    "discord.js": "^14.9.0",
+    "fs-extra": "^11.1.1",
+    "natural": "^6.2.0",
+    "node-fetch": "^3.3.1",
+    "quickchart-js": "^3.1.2"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "1.0.5",
+    "@types/fs-extra": "^11.0.1",
+    "@types/jquery": "^3.5.16",
+    "@types/node": "18.8.3",
+    "@types/react": "18.0.9",
+    "eslint": "^7.32.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.4.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
