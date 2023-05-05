@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const clientSecret = "ra09IgTOmrgnKzS5WVcwUJjA0iaZt2gm"
+const clientSecret: string = process.env.NEXT_PUBLIC_DISCORD_CLIENT_SECRET
 
 const API_ENDPOINT = 'https://discord.com/api/v10';
 const REDIRECT_URI = 'https://raycast.com/redirect?packageName=Extension';
@@ -8,7 +8,6 @@ const REDIRECT_URI = 'https://raycast.com/redirect?packageName=Extension';
 export async function POST(request: Request) {
   const authRequest = await request.json();
 
-  console.log(authRequest)
   const body = new URLSearchParams({
     'client_id': authRequest.client_id,
     'client_secret': clientSecret,
@@ -28,6 +27,7 @@ export async function POST(request: Request) {
 
   const response = await fetch(`${API_ENDPOINT}/oauth2/token`, options);
 
+  console.log(response)
   const tokens = await response.json();
 
   return NextResponse.json(tokens);
