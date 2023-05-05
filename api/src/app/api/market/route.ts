@@ -1,9 +1,7 @@
 import QuickChart from 'quickchart-js';
-import { getGradientColor } from "./color"
-import dayjs from 'dayjs';  
 import fetch from 'node-fetch';
-import { ResponseIndexerNFTCollectionTickersData } from '../models/NftRenderModels';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getChartColorConfig, getGradientColor } from '../utils/color';
 
 export function formatDigit(str: string, fractionDigits = 6, force = false) {
   const num = Number(str)
@@ -34,18 +32,18 @@ export async function renderChartImage({
   colorConfig,
   lineOnly,
 }: {
-    chartLabel?: string
-    labels: string[]
-    data: number[]
-    colorConfig?: {
-      borderColor: string
-      backgroundColor: string | CanvasGradient
-    }
-    lineOnly?: boolean
-  }) {
+  chartLabel?: string
+  labels: string[]
+  data: number[]
+  colorConfig?: {
+    borderColor: string
+    backgroundColor: string | CanvasGradient
+  }
+  lineOnly?: boolean
+}) {
   if (!colorConfig) {
     colorConfig = {
-      borderColor: "#009cdb",
+      borderColor: "#DC1FFF",
       backgroundColor: getGradientColor(
         "rgba(0,0,0,0)",
         "rgba(0,0,0,0)",
@@ -61,8 +59,8 @@ export async function renderChartImage({
       font: {
         size: 16,
       },
-      fontColor : "#ffffff",
-      color: colorConfig.borderColor,
+      fontColor: "#DC1FFF",
+      color: "#DC1FFF",
     },
     grid: {
       borderColor: colorConfig.borderColor,
@@ -103,7 +101,7 @@ export async function renderChartImage({
       ],
     },
     options: {
-      
+
       scales: {
         y: yAxisConfig,
         x: xAxisConfig,
@@ -150,43 +148,67 @@ export async function renderChartImage({
   }
 }
 
-async function renderNftTickerChart(
-  data: ResponseIndexerNFTCollectionTickersData
-) {
-  if (!data?.tickers?.prices || !data?.tickers?.timestamps) {
-    return null
+const API_BASE_URL = "https://api.mochi.pod.town/api/v1"
+
+async function getHistoricalMarketData({
+  coinId,
+  currency,
+  days = 30,
+}: {
+  coinId: string
+  currency: string
+  days?: number
+  discordId?: string
+}) {
+  console.log(coinId, currency, days)
+  const res = await fetch(`${API_BASE_URL}/defi/market-chart?coin_id=${coinId}&currency=${currency}&day=${days}`)
+
+  const data = await res.json();
+
+  return data.data
+}
+
+export async function renderHistoricalMarketChart({
+  coinId,
+  days = 30,
+}: {
+  coinId: string
+  days?: number
+}) {
+  const currency = "usd"
+  console.log("data", data)
+  const data = await getHistoricalMarketData({ coinId, currency, days })
+
+  if (!data) {
+    console.log("Not supported yet")
+    return "Not supported yet";
   }
-  const to = dayjs().unix() * 1000
-  const from = dayjs().subtract(30, "day").unix() * 1000
-  const token = ""
-  const fromLabel = dayjs(from).format("MMMM DD, YYYY")
-  const toLabel = dayjs(to).format("MMMM DD, YYYY")
-  const chartData = data.tickers.prices.map(
-    (p) => +(p.amount ?? 0) / Math.pow(10, p.token?.decimals ?? 0)
-  )
+
+  const { times, prices, from, to } = data
+
+  // draw chart
   const chart = await renderChartImage({
-    chartLabel: `Sold price (${token}) | ${fromLabel} - ${toLabel}`,
-    labels: data.tickers.timestamps.map((times) => `${dayjs(times).format("MMMM DD")}`),
-    data: chartData,
+    chartLabel: `Price (${currency.toUpperCase()}) | ${from} - ${to}`,
+    labels: times,
+    data: prices,
+    colorConfig: getChartColorConfig(coinId),
   })
   return chart
 }
-export async function GET(request: Request) {
+
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const collectionAddress = searchParams.get("collectionAddress")
-  const to = searchParams.get("to")
-  const from = searchParams.get("from")
+  const coin_id = searchParams.get("coin_id")
+  const days = searchParams.get("days")
+
   const mychart = new QuickChart();
-  const dataProm = await fetch(`https://api.indexer.console.so/api/v1/nft/ticker/${collectionAddress}?from=${from}&to=${to}`)
-  if (dataProm.status !== 200 ){
-    console.log("Status is not 200 actually\n")
+  const config = await renderHistoricalMarketChart({ coinId: coin_id });
+
+  if (config === "Not supported yet") {
+    return new Response("Not supported yet", { status: 404 })
   }
-  const datajson = await dataProm.json() as { data : ResponseIndexerNFTCollectionTickersData} 
-  const data = datajson.data as ResponseIndexerNFTCollectionTickersData 
-  const config = await renderNftTickerChart(data);
   mychart.setConfig(config)
-  mychart.setBackgroundColor("transparent")
+  mychart.setBackgroundColor("#212327")
   const dataurl = mychart.getUrl()
   return NextResponse.json({ imageURL: dataurl })
 }
-

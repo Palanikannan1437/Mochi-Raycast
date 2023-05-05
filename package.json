@@ -18,7 +18,7 @@
       "mode": "view"
     },
     {
-      "name": "currency",
+      "name": "tokens",
       "title": "Show Currency",
       "description": "Template for showing a static list and a detail view",
       "mode": "view"

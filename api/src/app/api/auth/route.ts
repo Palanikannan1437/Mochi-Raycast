@@ -4,8 +4,8 @@ const clientSecret = "ra09IgTOmrgnKzS5WVcwUJjA0iaZt2gm"
 
 const API_ENDPOINT = 'https://discord.com/api/v10';
 const REDIRECT_URI = 'https://raycast.com/redirect?packageName=Extension';
+
 export async function POST(request: Request) {
-  
   const authRequest = await request.json();
 
   console.log(authRequest)
