@@ -13,26 +13,14 @@
   "commands": [
     {
       "name": "index",
-      "title": "Show List and Detail",
-      "description": "Template for showing a static list and a detail view",
+      "title": "Explore Mochi Docs",
+      "description": "Play around with the Mochi Docs",
       "mode": "view"
     },
     {
       "name": "tokens",
-      "title": "Show Currency",
-      "description": "Template for showing a static list and a detail view",
-      "mode": "view"
-    },
-    {
-      "name": "grid",
-      "title": "Show Auth",
-      "description": "Template for showing a static list and a detail view",
-      "mode": "view"
-    },
-    {
-      "name": "currency_chart_renderer",
-      "title": "Show Currency Chart",
-      "description": "Template for showing start data for each currency",
+      "title": "Tokens",
+      "description": "See all tokens' data",
       "mode": "view"
     }
   ],

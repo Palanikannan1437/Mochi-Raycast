@@ -5,7 +5,7 @@ import fetch from "node-fetch"
 import path from "path"
 import { useCachedPromise, usePromise } from "@raycast/utils";
 import { getTickerData } from "./tickerRender";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useNavigationMarkdown from "./hooks/useNavigationMarkdown";
 
 function fileExists(f: string) {
@@ -30,21 +30,27 @@ export default function Command({ query }: { query: string }) {
 
       const dataPack: CoinData = (await fetchedData.json() as { data: CoinData }).data as CoinData
 
-      console.log(dataPack)
       return dataPack;
     },
   );
 
+  const [currentPointer, setCurrentPointer] = useState(0);
+
+  const ptrData: number[] = useMemo(() => [30, 1, 7], [])
+
+  const [horizontalData] = useNavigationMarkdown(["📊Market Cap", "💰 24h", "💰7d"], currentPointer)
+
   const { isLoading: graphIsLoading, data: graphData } = useCachedPromise(
-    async (coinId: string) => {
-      const dataurl = await getTickerData({ coin_id: coinId, days: 30 })
+    async (coinId: string, currentPointer: number) => {
+      // For now ptr data for any value just returns fixed value from the API
+      const dataurl = await getTickerData({ coin_id: coinId, days: ptrData[currentPointer] })
+      if (dataurl.error) {
+        return dataurl;
+      }
       return dataurl;
     },
-    [coinId],
+    [coinId, currentPointer],
   );
-
-  const [currentPointer, setCurrentPointer] = useState(0);
-  const [horizontalData] = useNavigationMarkdown(["📊Market Cap", "💰 1h", "💰 24h", "💰7d"], currentPointer)
 
   return (
     <List isShowingDetail isLoading={isLoading && graphIsLoading} onSelectionChange={(id) => {
@@ -58,7 +64,7 @@ export default function Command({ query }: { query: string }) {
             id={coin.id}
             key={coin.id}
             detail={
-              <List.Item.Detail markdown={`## ${coin.name} \n***\n ${horizontalData}\n![graph](${graphData})`} />
+              <List.Item.Detail markdown={`## ${coin.name} \n***\n ${!graphData?.error ? horizontalData : graphData.error}\n![graph](${graphData?.res})`} />
             }
             actions={
               <ActionPanel>

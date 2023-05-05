@@ -31,7 +31,6 @@ export default function Command() {
     }
     const dataPack: CoinData = (await fetchedData.json() as { data: CoinData }).data as CoinData
 
-    console.log(dataPack.metadata)
     setData(prevData => ({
       data: [...prevData.data, ...dataPack.data],
       metadata: dataPack.metadata,
@@ -108,7 +107,6 @@ export default function Command() {
               <Grid.Item actions={
                 <ActionPanel>
                   <Action title="Dive In" onAction={() => {
-                    console.log(data.symbol)
                     push(<CoinCommand query={data.symbol} />);
                   }} />
                 </ActionPanel>

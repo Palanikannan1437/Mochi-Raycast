@@ -63,7 +63,7 @@ export async function renderChartImage({
       color: "#DC1FFF",
     },
     grid: {
-      borderColor: colorConfig.borderColor,
+      borderColor: "#DC1FFF",
     },
   }
   const yAxisConfig = {
@@ -81,7 +81,7 @@ export async function renderChartImage({
       },
     },
     grid: {
-      borderColor: colorConfig.borderColor,
+      borderColor: "#DC1FFF",
     },
   }
   return {
@@ -160,10 +160,14 @@ async function getHistoricalMarketData({
   days?: number
   discordId?: string
 }) {
-  console.log(coinId, currency, days)
+  // irrespective of the day same data comes in
   const res = await fetch(`${API_BASE_URL}/defi/market-chart?coin_id=${coinId}&currency=${currency}&day=${days}`)
 
   const data = await res.json();
+
+  if (data.error) {
+    return null;
+  }
 
   return data.data
 }
@@ -176,11 +180,11 @@ export async function renderHistoricalMarketChart({
   days?: number
 }) {
   const currency = "usd"
-  console.log("data", data)
   const data = await getHistoricalMarketData({ coinId, currency, days })
+  
+  console.log(data)
 
   if (!data) {
-    console.log("Not supported yet")
     return "Not supported yet";
   }
 
@@ -207,6 +211,7 @@ export async function GET(request: NextRequest) {
   if (config === "Not supported yet") {
     return new Response("Not supported yet", { status: 404 })
   }
+
   mychart.setConfig(config)
   mychart.setBackgroundColor("#212327")
   const dataurl = mychart.getUrl()

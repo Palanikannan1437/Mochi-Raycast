@@ -74,7 +74,7 @@ export function getChartColorConfig(id?: string) {
       gradientTo = "rgba(61,53,83,0.5)"
       break
     default:
-      borderColor = "#009cdb"
+      borderColor = "#9945ff"
       gradientFrom = "rgba(53,83,192,0.9)"
       gradientTo = "rgba(58,69,110,0.5)"
   }

@@ -1,7 +1,6 @@
 import { getGradientColor } from "./color"
-import dayjs from 'dayjs';
 import fetch from 'node-fetch';
-import { ResponseIndexerNFTCollectionTickersData } from './NftTickerData';
+import { NEXT_PUBLIC_API_URL } from "./utils/constants";
 
 export function formatDigit(str: string, fractionDigits = 6, force = false) {
   const num = Number(str)
@@ -140,32 +139,13 @@ export async function renderChartImage({
   }
 }
 
-async function renderNftTickerChart(
-  data: ResponseIndexerNFTCollectionTickersData
-) {
-  if (!data?.tickers?.prices || !data?.tickers?.timestamps) {
-    return null
+export async function getTickerData({ coin_id, days }: { coin_id: string, days: number }): Promise<{ error: string | null, res: string }> {
+  const dataProm = await fetch(`${NEXT_PUBLIC_API_URL}/api/market?coin_id=${coin_id}&days=${days}`)
+  if (!dataProm.ok) {
+    return { error: "Not Available Yet", res: "https://res.cloudinary.com/ddglxo0l3/image/upload/v1682266903/output-onlinegiftools-4_oghdpq.gif" }
   }
-  const to = dayjs().unix() * 1000
-  const from = dayjs().subtract(6 * 30, "day").unix() * 1000
-  const token = ""
-  const fromLabel = dayjs(from).format("MMMM DD, YYYY")
-  const toLabel = dayjs(to).format("MMMM DD, YYYY")
-  const chartData = data.tickers.prices.map(
-    (p) => +(p.amount ?? 0) / Math.pow(10, p.token?.decimals ?? 0)
-  )
-  const chart = await renderChartImage({
-    chartLabel: `Sold price (${token}) | ${fromLabel} - ${toLabel}`,
-    labels: data.tickers.timestamps.map((times) => `${dayjs(times).format("MM DD, YYYY")}`),
-    data: chartData,
-  })
-  return chart
-}
-
-export async function getTickerData({ coin_id, days }: { coin_id: string, days: number }): Promise<string> {
-  const dataProm = await fetch(`http://localhost:3000/api/market?coin_id=${coin_id}&days=${days}`)
   const data = await dataProm.json() as { imageURL: string }
-  // console.log("asfaf",data)
-  return data.imageURL
+
+  return { error: null, res: data.imageURL }
 }
 

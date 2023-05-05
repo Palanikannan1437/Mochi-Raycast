@@ -1,5 +1,6 @@
 import { OAuth, environment } from "@raycast/api";
 import fetch from "node-fetch";
+import { NEXT_PUBLIC_API_URL } from "../utils/constants";
 
 const clientId = "1099988770910122025";
 
@@ -32,7 +33,6 @@ export async function authorize() {
   return tokens.access_token;
 }
 
-
 export async function fetchTokens(
   authRequest: OAuth.AuthorizationRequest,
   authCode: string
@@ -43,7 +43,7 @@ export async function fetchTokens(
     'code_verifier': authRequest.codeVerifier,
   };
 
-  const response = await fetch('http://localhost:3000/api/auth', {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/auth`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
