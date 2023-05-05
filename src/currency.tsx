@@ -1,5 +1,5 @@
 import { Action, ActionPanel, List } from "@raycast/api"
-import { CoinData } from "../models/CoinSchema"
+import { CoinCoreData, CoinData } from "../models/CoinSchema"
 import fs from "fs-extra";
 import fetch from "node-fetch"
 import path from "path"
@@ -28,9 +28,11 @@ export default function Command({ query }: { query: string }) {
         return false;
       }
 
-      const dataPack: CoinData = (await fetchedData.json() as { data: CoinData }).data as CoinData
+      const dataPack = await fetchedData.json() as CoinData
 
-      return dataPack;
+      const temp: CoinCoreData[] = dataPack.data
+
+      return temp;
     },
   );
 
